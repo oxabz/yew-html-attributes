@@ -1,1 +1,6 @@
 [workspace]
+members = [
+  "yew-html-attributes",
+  "yew-html-attributes-macros",
+  "yew-html-attributes-demo"
+]
