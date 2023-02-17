@@ -840,6 +840,7 @@ dependencies = [
 name = "yew-html-attributes"
 version = "0.1.0"
 dependencies = [
+ "yew",
  "yew-html-attributes-macros",
 ]
 
