@@ -1,5 +1,5 @@
 [package]
-name = "yew-html-attributes"
+name = "yew-attributes-macro"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 yew = { version="0.20", features=["csr"] }
-yew-html-attributes-macros = {path = "../yew-html-attributes-macros"}
+yew-attributes-macro-derive = {path = "../yew-attributes-macro-derive"}
+wasm-bindgen = "0.2.78"

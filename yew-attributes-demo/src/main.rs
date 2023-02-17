@@ -1,4 +1,5 @@
 mod app;
+mod input;
 
 use app::App;
 
