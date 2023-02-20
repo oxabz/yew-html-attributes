@@ -24,5 +24,5 @@ lazy_static! {
 }
 
 pub(crate) fn get_attributes() -> &'static HashMap<String, String> {
-  return &HTML_ATTRIBUTES;
+  &HTML_ATTRIBUTES
 }

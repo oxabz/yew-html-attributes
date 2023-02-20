@@ -16,11 +16,11 @@ pub fn has_attributes(
 ) -> proc_macro::TokenStream {
   // Parse the input tokens into a syntax tree
   let args = parse_macro_input!(attr as AttributeArgs);
-  if args.len() > 0 {
+  if !args.is_empty() {
     panic!("use_attributes does not take any arguments");
   }
   let input: DeriveInput = syn::parse(item).unwrap();
-  let mut output = input.clone();
+  let mut output = input;
   match &mut output.data {
     syn::Data::Struct(strct) => {
       transform_struct(strct);
