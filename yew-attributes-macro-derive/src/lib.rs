@@ -1,39 +1,14 @@
+mod has_attributes;
+mod use_attributes;
+mod utils;
+
 extern crate proc_macro;
-use proc_macro2::TokenStream;
+use has_attributes::transform_struct;
 use quote::quote;
-use syn::{parse_macro_input, AttributeArgs, DataStruct, DeriveInput};
+use syn::{parse_macro_input, AttributeArgs, DeriveInput};
+use use_attributes::{generate_set_instructions, generate_unset_instructions};
 
-fn generate_fields() -> Vec<syn::Field> {
-  // Load the fields from the csv html-attributes-general.csv
-  let bytes = include_bytes!("html-attributes-general.csv");
-  let mut rdr = csv::Reader::from_reader(bytes.as_slice());
-
-  // Create a vector of fields
-  let mut fields = Vec::new();
-  for result in rdr.records() {
-    let record = result.unwrap();
-    let name = record[0].to_string();
-    let ty = record[1].to_string();
-    let field: syn::FieldsNamed =
-      syn::parse_str(&format!("{{pub {}: Option<{}>}}", name, ty)).unwrap();
-    let field: syn::Field = field.named.first().unwrap().clone();
-    fields.push(field);
-  }
-  fields
-}
-
-fn transform_struct(input: &mut DataStruct) {
-  match &mut input.fields {
-    syn::Fields::Named(fields) => {
-      let new_fields = generate_fields();
-      for field in new_fields {
-        fields.named.push(field);
-      }
-    }
-    _ => panic!("use_attributes can only be used on structs with named fields"),
-  }
-}
-
+/// Adds the standard html attributes to the Properties struct
 #[proc_macro_attribute]
 pub fn has_attributes(
   attr: proc_macro::TokenStream,
@@ -55,72 +30,7 @@ pub fn has_attributes(
   quote!(#output).into()
 }
 
-fn generate_instructions() -> Vec<TokenStream> {
-  // Load the fields from the csv html-attributes-general.csv
-  let bytes = include_bytes!("html-attributes-general.csv");
-  let mut rdr = csv::Reader::from_reader(bytes.as_slice());
-
-  // Create a vector of fields
-  let mut instructions = Vec::new();
-  for result in rdr.records() {
-    let record = result.unwrap();
-    let name = record[0].to_string();
-    let ident = syn::Ident::new(&name, proc_macro2::Span::call_site());
-    let ty = record[1].to_string();
-    if ty == "String" {
-      let instruction = quote!(
-          if let Some(#ident) = &props.#ident {
-              node.set_attribute(#name, #ident).expect("set_attribute failed");
-          }
-      )
-      .into();
-      instructions.push(instruction);
-    } else if ty == "Callback<Event>" {
-      let fnid = syn::Ident::new(&format!("set_{}", name), proc_macro2::Span::call_site());
-      let instruction = quote!(
-        if let Some(#ident) = &props.#ident {
-          let listener = wasm_bindgen::closure::Closure::<dyn Fn(Event)>::wrap(Box::new({
-            let #ident = #ident.clone();
-            move |e: Event| {
-              #ident.emit(e)
-            }
-          }));
-          node.#fnid(Some(listener.as_ref().unchecked_ref()));
-          listeners.push(listener);
-        }else {
-          node.#fnid(None);
-        }
-      )
-      .into();
-      instructions.push(instruction);
-    }
-  }
-  instructions
-}
-
-fn generate_unset_instructions()-> Vec<TokenStream> {
-  // Load the fields from the csv html-attributes-general.csv
-  let bytes = include_bytes!("html-attributes-general.csv");
-  let mut rdr = csv::Reader::from_reader(bytes.as_slice());
-
-  // Create a vector of fields
-  let mut instructions = Vec::new();
-  for result in rdr.records() {
-    let record = result.unwrap();
-    let name = record[0].to_string();
-    let ty = record[1].to_string();
-    if ty == "Callback<Event>" {
-      let fnid = syn::Ident::new(&format!("set_{}", name), proc_macro2::Span::call_site());
-      let instruction = quote!(
-        node.#fnid(None);
-      )
-      .into();
-      instructions.push(instruction);
-    }
-  }
-  instructions
-}
-
+/// Create a hook that use the html attributes created by has_attributes to pass them to a given html element
 #[proc_macro]
 pub fn use_attributes(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
   // Parse the input tokens
@@ -137,7 +47,7 @@ pub fn use_attributes(item: proc_macro::TokenStream) -> proc_macro::TokenStream 
     _ => panic!("use_attributes second argument must be a path"),
   };
 
-  let instructions = generate_instructions().into_iter();
+  let instructions = generate_set_instructions().into_iter();
   let unset_instructions = generate_unset_instructions().into_iter();
   quote!(
     use_effect_with_deps(|(node_ref, props)|{
