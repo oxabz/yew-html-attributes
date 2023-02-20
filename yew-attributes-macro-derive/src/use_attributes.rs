@@ -1,4 +1,3 @@
-
 use proc_macro2::TokenStream;
 use quote::quote;
 
@@ -42,10 +41,10 @@ pub(crate) fn generate_set_instructions() -> Vec<TokenStream> {
   instructions
 }
 
-pub(crate)  fn generate_unset_instructions()-> Vec<TokenStream> {
+pub(crate) fn generate_unset_instructions() -> Vec<TokenStream> {
   // Create a vector of fields
   let mut instructions = Vec::new();
-  for (name, typ) in get_attributes().iter(){
+  for (name, typ) in get_attributes().iter() {
     if typ == "Callback<Event>" {
       let fnid = syn::Ident::new(&format!("set_{}", name), proc_macro2::Span::call_site());
       let instruction = quote!(

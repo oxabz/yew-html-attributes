@@ -18,9 +18,13 @@ fn generate_fields() -> Vec<syn::Field> {
   let mut fields = Vec::new();
 
   for (name, typ) in get_attributes().iter() {
-    let field: syn::FieldsNamed =
-      syn::parse_str(&format!("{{pub {}: Option<{}>}}", name, typ)).expect("yew-attributes panicked [ code : vxmnq ]");
-    let field: syn::Field = field.named.first().expect("yew-attributes panicked [ code : uDDWI]").clone();
+    let field: syn::FieldsNamed = syn::parse_str(&format!("{{pub {}: Option<{}>}}", name, typ))
+      .expect("yew-attributes panicked [ code : vxmnq ]");
+    let field: syn::Field = field
+      .named
+      .first()
+      .expect("yew-attributes panicked [ code : uDDWI]")
+      .clone();
     fields.push(field);
   }
 
