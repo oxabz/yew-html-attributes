@@ -1,6 +1,6 @@
 # Yew html attributes
 
-Yew html attributes is a macro crate that allow you to easily had standard html attributes to your component and to then pass them to a children.
+Yew html attributes is a macro crate that allow you to easily add standard html attributes to your component and to then pass them to a child.
 
 > WARNING: This crate is a proof of concept and should be avoided in production, as it is not stable and untested
 
@@ -8,7 +8,7 @@ Yew html attributes is a macro crate that allow you to easily had standard html 
 
 To add the hml attributes to your props just add the `#[has_attributes]` before your props.
 
-To then pass them along use the `use_attributes!` macro with a reference to the children html element and the props struct.
+To then pass them along use the `use_attributes!` macro with a reference to the child html element and the props refererence.
 
 ```rs
 use yew::prelude::*;
