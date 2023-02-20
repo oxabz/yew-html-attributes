@@ -17,7 +17,7 @@ pub fn has_attributes(
   // Parse the input tokens into a syntax tree
   let args = parse_macro_input!(attr as AttributeArgs);
   if !args.is_empty() {
-    panic!("use_attributes does not take any arguments");
+    panic!("has_attributes does not take any arguments");
   }
   let input: DeriveInput = syn::parse(item).unwrap();
   let mut output = input;
