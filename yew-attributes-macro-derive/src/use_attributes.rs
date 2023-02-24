@@ -10,7 +10,7 @@ pub(crate) fn generate_set_instructions() -> Vec<TokenStream> {
     let ident = syn::Ident::new(name, proc_macro2::Span::call_site());
     if typ == "String" {
       let instruction = quote!(
-          if let Some(#ident) = &props.#ident {
+          if let Some(#ident) = &self.#ident {
               node.set_attribute(#name, #ident).expect("set_attribute failed");
           }
       );
@@ -18,14 +18,14 @@ pub(crate) fn generate_set_instructions() -> Vec<TokenStream> {
     } else if typ == "Callback<Event>" {
       let fnid = syn::Ident::new(&format!("set_{}", name), proc_macro2::Span::call_site());
       let instruction = quote!(
-        if let Some(#ident) = &props.#ident {
+        if let Some(#ident) = &self.#ident {
           let listener = wasm_bindgen::closure::Closure::<dyn Fn(Event)>::wrap(Box::new({
             let #ident = #ident.clone();
             move |e: Event| {
               #ident.emit(e)
             }
           }));
-          node.#fnid(Some(listener.as_ref().unchecked_ref()));
+          node.#fnid(Some(wasm_bindgen::JsCast::unchecked_ref(listener.as_ref())));
           listeners.push(listener);
         }else {
           node.#fnid(None);

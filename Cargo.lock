@@ -878,6 +878,7 @@ name = "yew-attributes-macro"
 version = "0.1.0"
 dependencies = [
  "wasm-bindgen",
+ "web-sys",
  "yew",
  "yew-attributes-macro-derive",
 ]
