@@ -1,7 +1,7 @@
 use yew::prelude::*;
 use yew_attributes_macro::prelude::*;
 
-#[has_attributes(exclude = "type")]
+#[has_attributes(exclude = "")]
 #[derive(Debug, Clone, PartialEq, Default, Properties, HasHtmlAttributes)]
 pub struct Props {}
 
@@ -10,7 +10,6 @@ pub fn input(props: &Props) -> Html {
   let node_ref = use_node_ref();
 
   use_attributes!(node_ref, props);
-  
   html! {
     <>
       <p>{format!("{props:#?}")}</p>

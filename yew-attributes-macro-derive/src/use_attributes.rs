@@ -9,7 +9,12 @@ pub(crate) fn generate_set_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
   let attr_dict = get_attributes();
   for attr in attrs {
     let name = attr.to_string();
-    let typ = attr_dict.get(&name).expect(&format!("attribute {name} is not a known html attribute"));
+    let name = if name == "typ" {
+      "type"
+    } else {
+      &name
+    };
+    let typ = attr_dict.get(name).expect(&format!("attribute {name} is not a known html attribute"));
 
     if typ == "String" {
       let instruction = quote!(

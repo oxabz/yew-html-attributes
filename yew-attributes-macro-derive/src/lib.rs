@@ -3,8 +3,9 @@ mod use_attributes;
 mod utils;
 
 extern crate proc_macro;
+
 use has_attributes::transform_struct;
-use quote::quote;
+use quote::{quote};
 use syn::{parse_macro_input, AttributeArgs, DeriveInput};
 use use_attributes::{generate_set_instructions, generate_unset_instructions};
 
@@ -17,11 +18,23 @@ pub fn has_attributes(
   // Parse the input tokens into a syntax tree
   let args = parse_macro_input!(attr as AttributeArgs);
 
+  let mut excluded = vec![];
+  for arg in args {
+    if let syn::NestedMeta::Meta(syn::Meta::NameValue(nv)) = arg {
+      if nv.path.is_ident("exclude") {
+        if let syn::Lit::Str(lit) = nv.lit {
+          let ex = lit.value();
+          excluded = ex.split(",").map(String::from).collect();
+        }
+      }
+    }
+  }
+
   let input: DeriveInput = syn::parse(item).unwrap();
   let mut output = input;
   match &mut output.data {
     syn::Data::Struct(strct) => {
-      transform_struct(strct);
+      transform_struct(strct, &excluded);
     }
     _ => panic!("use_attributes can only be used on structs"),
   }
