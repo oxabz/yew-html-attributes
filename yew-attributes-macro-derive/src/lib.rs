@@ -16,9 +16,7 @@ pub fn has_attributes(
 ) -> proc_macro::TokenStream {
   // Parse the input tokens into a syntax tree
   let args = parse_macro_input!(attr as AttributeArgs);
-  if !args.is_empty() {
-    panic!("has_attributes does not take any arguments");
-  }
+
   let input: DeriveInput = syn::parse(item).unwrap();
   let mut output = input;
   match &mut output.data {
@@ -60,12 +58,34 @@ pub fn has_attributes(
 
 
 /// Implements the HasHtmlAttributes trait for the given struct
-#[proc_macro_derive(HasHtmlAttributes)]
+#[proc_macro_derive(HasHtmlAttributes, attributes(attr))]
 pub fn derive_has_html_attributes(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let input: DeriveInput = syn::parse(item).unwrap();
   let name = &input.ident;
-  let set_instructions = generate_set_instructions();
-  let unset_instructions = generate_unset_instructions();
+
+  let mut attr_fields = vec![];
+
+  match input.data {
+    syn::Data::Struct(data) => {
+      if let syn::Fields::Named(fields) = data.fields {
+        for field in fields.named {
+          if let Some(attr) = field.attrs.first() {
+            if attr.path.is_ident("attr") {
+              attr_fields.push(field.ident.unwrap());
+            }
+          }
+        }
+      } else {
+        panic!("HasHtmlAttributes can only be used on structs with named fields");
+      }
+    }
+    _ => panic!("HasHtmlAttributes can only be used on structs"),
+  }
+
+
+
+  let set_instructions = generate_set_instructions(&attr_fields);
+  let unset_instructions = generate_unset_instructions(&attr_fields);
   quote!(
     impl yew_attributes_macro::HasHtmlAttributes for #name {
       fn set_attributes(&self, node: &web_sys::HtmlElement) -> Vec<wasm_bindgen::closure::Closure<dyn Fn(Event)>> {
