@@ -871,6 +871,7 @@ dependencies = [
  "web-sys",
  "yew",
  "yew-attributes-macro",
+ "yew-html-attributes-demo-input",
 ]
 
 [[package]]
@@ -892,6 +893,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "yew-html-attributes-demo-input"
+version = "0.1.0"
+dependencies = [
+ "wasm-bindgen",
+ "web-sys",
+ "yew",
+ "yew-attributes-macro",
 ]
 
 [[package]]

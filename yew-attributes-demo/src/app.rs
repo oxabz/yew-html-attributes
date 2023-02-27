@@ -1,4 +1,4 @@
-use crate::input::Input;
+use yew_html_attributes_demo_input::Input;
 use web_sys::console::log_1;
 use yew::prelude::*;
 
