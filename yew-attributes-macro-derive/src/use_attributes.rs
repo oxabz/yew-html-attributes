@@ -1,12 +1,12 @@
 use proc_macro2::{TokenStream, Ident};
 use quote::quote;
 
-use crate::utils::get_attributes;
+use crate::utils::{get_all_attributes};
 
 pub(crate) fn generate_set_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
   // Create a vector of fields
   let mut instructions = Vec::new();
-  let attr_dict = get_attributes();
+  let attr_dict = get_all_attributes();
   for attr in attrs {
     let name = attr.to_string();
     let name = if name == "typ" {
@@ -50,7 +50,7 @@ pub(crate) fn generate_set_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
 pub(crate) fn generate_unset_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
   // Create a vector of fields
   let mut instructions = Vec::new();
-  let attr_dict = get_attributes();
+  let attr_dict = get_all_attributes();
   for attr in attrs{
     let name = attr.to_string();
     let typ = attr_dict.get(&name).expect(&format!("attribute {name} is not a known html attribute"));

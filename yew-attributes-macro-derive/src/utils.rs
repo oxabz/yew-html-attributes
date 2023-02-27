@@ -29,7 +29,7 @@ lazy_static! {
   };
 }
 
-pub(crate) fn get_attributes(visible: bool, set:Option<&str>, excluded:&[&str]) -> HashMap<String, String> {
+pub(crate) fn get_attributes(visible: bool, set:Option<&str>, excluded:&[String]) -> HashMap<String, String> {
   let mut attributes = HTML_ATTRIBUTES["*"].clone();
   
   if visible{
@@ -47,8 +47,19 @@ pub(crate) fn get_attributes(visible: bool, set:Option<&str>, excluded:&[&str]) 
   }
 
   for ex in excluded{
-    attributes.remove(*ex);
+    attributes.remove(ex);
   }
 
   attributes
+}
+
+pub(crate) fn get_all_attributes() -> HashMap<String, String> {
+  HTML_ATTRIBUTES.iter().fold(HashMap::new(), |acc, (_,x)|{
+    let mut acc = acc;
+    for (name, typ) in x.iter(){
+      let (name, typ) = (name.clone(), typ.clone());
+      acc.insert(name, typ);
+    }
+    acc
+  })
 }

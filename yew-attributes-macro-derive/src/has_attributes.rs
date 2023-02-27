@@ -17,10 +17,7 @@ pub(crate) fn transform_struct(input: &mut DataStruct, exclude: &[String]) {
 fn generate_fields(exclude:&[String]) -> Vec<syn::Field> {
   let mut fields = Vec::new();
 
-  for (name, typ) in get_attributes().iter() {
-    if exclude.contains(&name) {
-      continue;
-    }
+  for (name, typ) in get_attributes(true, None, exclude).iter() {
     let name = if name == "type" {
       "typ"
     } else {
