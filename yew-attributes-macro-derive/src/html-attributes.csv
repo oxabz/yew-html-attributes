@@ -123,7 +123,6 @@ ontoggle,details,yew::callback::Callback<websys::Event>
 onunload,body,yew::callback::Callback<websys::Event>
 onvolumechange,"audio,video",yew::callback::Callback<websys::Event>
 onwaiting,"audio,video",yew::callback::Callback<websys::Event>
-onwheel,"visible",yew::callback::Callback<websys::Event>
 open,details,String
 optimum,meter,String
 pattern,input,String
