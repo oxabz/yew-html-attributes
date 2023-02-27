@@ -71,7 +71,7 @@ pub fn has_attributes(
 
 
 /// Implements the HasHtmlAttributes trait for the given struct
-#[proc_macro_derive(HasHtmlAttributes, attributes(attr))]
+#[proc_macro_derive(HasHtmlAttributes, attributes(htmlattr))]
 pub fn derive_has_html_attributes(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let input: DeriveInput = syn::parse(item).unwrap();
   let name = &input.ident;

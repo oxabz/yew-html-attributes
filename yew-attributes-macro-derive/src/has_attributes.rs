@@ -23,7 +23,7 @@ fn generate_fields(exclude:&[String]) -> Vec<syn::Field> {
     } else {
       name
     };
-    let field: syn::FieldsNamed = syn::parse_str(&format!("{{#[attr]pub {}: Option<{}>}}", name, typ))
+    let field: syn::FieldsNamed = syn::parse_str(&format!("{{#[htmlattr]pub {}: Option<{}>}}", name, typ))
       .expect("yew-attributes panicked [ code : vxmnq ]");
     let field: syn::Field = field
       .named
