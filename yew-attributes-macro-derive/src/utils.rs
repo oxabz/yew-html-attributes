@@ -7,7 +7,7 @@ lazy_static! {
     let mut html_attributes = HashMap::new();
 
     // Load the fields from the csv html-attributes-general.csv
-    let bytes = include_bytes!("html-attributes-general.csv");
+    let bytes = include_bytes!("html-attributes.csv");
     let mut rdr = csv::Reader::from_reader(bytes.as_slice());
 
     for line in rdr.records() {
