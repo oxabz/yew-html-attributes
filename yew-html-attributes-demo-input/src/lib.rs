@@ -1,7 +1,7 @@
 use yew::prelude::*;
 use yew_html_attributes::prelude::*;
 
-#[has_html_attributes(element = "input", exclude = "text")]
+#[has_html_attributes(element = "input", exclude = "type")]
 #[derive(Debug, Clone, PartialEq, Default, Properties, HasHtmlAttributes)]
 pub struct InputProps{}
 
