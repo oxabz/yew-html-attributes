@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 yew = "0.20.0"
-yew-attributes-macro = {path = "../yew-attributes-macro"}
+yew-html-attributes = {path = "../yew-html-attributes"}
 wasm-bindgen = "0.2.74"
 
 [dependencies.web-sys]

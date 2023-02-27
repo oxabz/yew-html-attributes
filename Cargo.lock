@@ -864,35 +864,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "yew-attributes-demo"
+name = "yew-html-attributes"
 version = "0.1.0"
 dependencies = [
  "wasm-bindgen",
  "web-sys",
  "yew",
- "yew-attributes-macro",
+ "yew-html-attributes-macro-derive",
+]
+
+[[package]]
+name = "yew-html-attributes-demo"
+version = "0.1.0"
+dependencies = [
+ "wasm-bindgen",
+ "web-sys",
+ "yew",
  "yew-html-attributes-demo-input",
-]
-
-[[package]]
-name = "yew-attributes-macro"
-version = "0.1.0"
-dependencies = [
- "wasm-bindgen",
- "web-sys",
- "yew",
- "yew-attributes-macro-derive",
-]
-
-[[package]]
-name = "yew-attributes-macro-derive"
-version = "0.1.0"
-dependencies = [
- "csv",
- "lazy_static",
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -902,7 +890,18 @@ dependencies = [
  "wasm-bindgen",
  "web-sys",
  "yew",
- "yew-attributes-macro",
+ "yew-html-attributes",
+]
+
+[[package]]
+name = "yew-html-attributes-macro-derive"
+version = "0.1.0"
+dependencies = [
+ "csv",
+ "lazy_static",
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

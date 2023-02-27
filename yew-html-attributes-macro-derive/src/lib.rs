@@ -48,7 +48,7 @@ fn parse_has_attributes_args(args: Vec<NestedMeta>) -> (bool, Option<String>, Ve
 
 /// Adds the standard html attributes to the Properties struct
 #[proc_macro_attribute]
-pub fn has_attributes(
+pub fn has_html_attributes(
   attr: proc_macro::TokenStream,
   item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
@@ -153,7 +153,7 @@ pub fn derive_has_html_attributes(item: proc_macro::TokenStream) -> proc_macro::
   let set_instructions = generate_set_instructions(&attr_fields);
   let unset_instructions = generate_unset_instructions(&attr_fields);
   quote!(
-    impl yew_attributes_macro::HasHtmlAttributes for #name {
+    impl HasHtmlAttributes for #name {
       fn set_attributes(&self, node: &web_sys::HtmlElement) -> Vec<wasm_bindgen::closure::Closure<dyn Fn(Event)>> {
         let mut listeners: Vec<wasm_bindgen::closure::Closure<dyn Fn(Event)>> = Vec::new();
         #(#set_instructions)*
