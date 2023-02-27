@@ -6,20 +6,14 @@ extern crate proc_macro;
 
 use has_attributes::transform_struct;
 use quote::{quote};
-use syn::{parse_macro_input, AttributeArgs, DeriveInput};
+use syn::{parse_macro_input, AttributeArgs, DeriveInput, NestedMeta};
 use use_attributes::{generate_set_instructions, generate_unset_instructions};
 
-/// Adds the standard html attributes to the Properties struct
-#[proc_macro_attribute]
-pub fn has_attributes(
-  attr: proc_macro::TokenStream,
-  item: proc_macro::TokenStream,
-) -> proc_macro::TokenStream {
-  // Parse the input tokens into a syntax tree
-  let args = parse_macro_input!(attr as AttributeArgs);
-
+/// Parse the has_attributes macro arguments 
+fn parse_has_attributes_args(args:Vec<NestedMeta>) -> (bool, Option<String>, Vec<String>){
   let mut excluded = vec![];
   let mut visible = true;
+  let mut element = None;
   for arg in args {
     if let syn::NestedMeta::Meta(syn::Meta::NameValue(nv)) = arg {
       if nv.path.is_ident("exclude") {
@@ -34,12 +28,33 @@ pub fn has_attributes(
         if let syn::Lit::Bool(lit) = &nv.lit {
           let lit = lit.value();
           visible = !lit;
+        } else {
+          panic!("invisble argument expects a boolean")
+        }
+      }
+      if nv.path.is_ident("element"){
+        if let syn::Lit::Str(lit) = &nv.lit {
+          let lit = lit.value();
+          element = Some(lit);
+        } else {
+          panic!("element argument expects a string")
         }
       }
     }
   }
+  (visible, element, excluded)
+}
 
-  
+/// Adds the standard html attributes to the Properties struct
+#[proc_macro_attribute]
+pub fn has_attributes(
+  attr: proc_macro::TokenStream,
+  item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+  // Parse the input tokens into a syntax tree
+  let args = parse_macro_input!(attr as AttributeArgs);
+
+  let (visible, element, excluded) = parse_has_attributes_args(args);
 
   let input: DeriveInput = syn::parse(item).unwrap();
   let mut output = input;
