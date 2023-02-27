@@ -29,7 +29,7 @@ lazy_static! {
   };
 }
 
-pub(crate) fn get_attributes(visible: bool, set:Option<&str>, excluded:&[String]) -> HashMap<String, String> {
+pub(crate) fn get_attributes(visible: bool, element:Option<&str>, excluded:&[String]) -> HashMap<String, String> {
   let mut attributes = HTML_ATTRIBUTES["*"].clone();
   
   if visible{
@@ -39,8 +39,8 @@ pub(crate) fn get_attributes(visible: bool, set:Option<&str>, excluded:&[String]
     }
   }
 
-  if let Some(set) = set {
-    for (name, typ) in HTML_ATTRIBUTES[set].iter(){
+  if let Some(element) = element {
+    for (name, typ) in HTML_ATTRIBUTES[element].iter(){
       let (name, typ) = (name.clone(), typ.clone());
       attributes.insert(name, typ);
     }

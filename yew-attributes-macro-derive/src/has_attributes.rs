@@ -2,7 +2,7 @@ use syn::DataStruct;
 
 use crate::utils::get_attributes;
 
-pub(crate) fn transform_struct(input: &mut DataStruct, visible:bool, exclude: &[String]) {
+pub(crate) fn transform_struct(input: &mut DataStruct, visible:bool, element:Option<&str>, exclude: &[String]) {
   match &mut input.fields {
     syn::Fields::Named(fields) => {
       let new_fields = generate_fields(visible, exclude);

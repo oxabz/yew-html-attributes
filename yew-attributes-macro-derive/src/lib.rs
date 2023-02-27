@@ -5,12 +5,13 @@ mod utils;
 extern crate proc_macro;
 
 use has_attributes::transform_struct;
-use quote::{quote};
-use syn::{parse_macro_input, AttributeArgs, DeriveInput, NestedMeta};
+use proc_macro2::Span;
+use quote::{quote, ToTokens};
+use syn::{parse_macro_input, token::Pound, Attribute, AttributeArgs, DeriveInput, NestedMeta};
 use use_attributes::{generate_set_instructions, generate_unset_instructions};
 
-/// Parse the has_attributes macro arguments 
-fn parse_has_attributes_args(args:Vec<NestedMeta>) -> (bool, Option<String>, Vec<String>){
+/// Parse the has_attributes macro arguments
+fn parse_has_attributes_args(args: Vec<NestedMeta>) -> (bool, Option<String>, Vec<String>) {
   let mut excluded = vec![];
   let mut visible = true;
   let mut element = None;
@@ -32,7 +33,7 @@ fn parse_has_attributes_args(args:Vec<NestedMeta>) -> (bool, Option<String>, Vec
           panic!("invisble argument expects a boolean")
         }
       }
-      if nv.path.is_ident("element"){
+      if nv.path.is_ident("element") {
         if let syn::Lit::Str(lit) = &nv.lit {
           let lit = lit.value();
           element = Some(lit);
@@ -60,12 +61,17 @@ pub fn has_attributes(
   let mut output = input;
   match &mut output.data {
     syn::Data::Struct(strct) => {
-      transform_struct(strct, visible, &excluded);
+      transform_struct(
+        strct,
+        visible,
+        element.as_ref().map(String::as_str),
+        &excluded,
+      );
     }
     _ => panic!("use_attributes can only be used on structs"),
   }
 
-  // Check that the struct has a Properties & HasHtmlAttributes derive 
+  // Check that the struct has a Properties & HasHtmlAttributes derive
   let mut has_properties = false;
   let mut has_html_attributes = false;
   for attr in &output.attrs {
@@ -84,20 +90,43 @@ pub fn has_attributes(
       }
     }
   }
-  if !has_properties{
+
+  if let Some(elem) = &element {
+    let meta: syn::Meta = syn::parse_str(&format!("htmlelem = \"{elem}\"")).unwrap();
+    if let syn::Meta::NameValue(syn::MetaNameValue {
+      path,
+      eq_token,
+      lit,
+    }) = meta
+    {
+      let mut tokens = eq_token.to_token_stream();
+      tokens.extend(lit.to_token_stream());
+      output.attrs.push(Attribute {
+        pound_token: Pound(Span::call_site()),
+        style: syn::AttrStyle::Outer,
+        bracket_token: syn::token::Bracket {
+          span: Span::call_site(),
+        },
+        path,
+        tokens,
+      });
+    }
+  }
+
+  if !has_properties {
     panic!("has_attributes can only be used on structs with a Properties derive");
   }
-  if !has_html_attributes{
+  if !has_html_attributes {
     panic!("has_attributes can only be used on structs with a HasHtmlAttributes derive");
   }
   quote!(
     #output
-  ).into()
+  )
+  .into()
 }
 
-
 /// Implements the HasHtmlAttributes trait for the given struct
-#[proc_macro_derive(HasHtmlAttributes, attributes(htmlattr))]
+#[proc_macro_derive(HasHtmlAttributes, attributes(htmlattr, htmlelem))]
 pub fn derive_has_html_attributes(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
   let input: DeriveInput = syn::parse(item).unwrap();
   let name = &input.ident;
@@ -120,8 +149,6 @@ pub fn derive_has_html_attributes(item: proc_macro::TokenStream) -> proc_macro::
     }
     _ => panic!("HasHtmlAttributes can only be used on structs"),
   }
-
-
 
   let set_instructions = generate_set_instructions(&attr_fields);
   let unset_instructions = generate_unset_instructions(&attr_fields);
