@@ -1,7 +1,7 @@
 use yew::prelude::*;
 use yew_attributes_macro::prelude::*;
 
-#[has_attributes(exclude = "")]
+#[has_attributes(element = "input", exclude = "")]
 #[derive(Debug, Clone, PartialEq, Default, Properties, HasHtmlAttributes)]
 pub struct Props {}
 
