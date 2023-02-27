@@ -2,10 +2,10 @@ use syn::DataStruct;
 
 use crate::utils::get_attributes;
 
-pub(crate) fn transform_struct(input: &mut DataStruct, exclude: &[String]) {
+pub(crate) fn transform_struct(input: &mut DataStruct, visible:bool, exclude: &[String]) {
   match &mut input.fields {
     syn::Fields::Named(fields) => {
-      let new_fields = generate_fields(exclude);
+      let new_fields = generate_fields(visible, exclude);
       for field in new_fields {
         fields.named.push(field);
       }
@@ -14,10 +14,10 @@ pub(crate) fn transform_struct(input: &mut DataStruct, exclude: &[String]) {
   }
 }
 
-fn generate_fields(exclude:&[String]) -> Vec<syn::Field> {
+fn generate_fields(visible:bool, exclude:&[String]) -> Vec<syn::Field> {
   let mut fields = Vec::new();
 
-  for (name, typ) in get_attributes(true, None, exclude).iter() {
+  for (name, typ) in get_attributes(visible, None, exclude).iter() {
     let name = if name == "type" {
       "typ"
     } else {

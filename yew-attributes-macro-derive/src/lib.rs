@@ -19,22 +19,33 @@ pub fn has_attributes(
   let args = parse_macro_input!(attr as AttributeArgs);
 
   let mut excluded = vec![];
+  let mut visible = true;
   for arg in args {
     if let syn::NestedMeta::Meta(syn::Meta::NameValue(nv)) = arg {
       if nv.path.is_ident("exclude") {
-        if let syn::Lit::Str(lit) = nv.lit {
+        if let syn::Lit::Str(lit) = &nv.lit {
           let ex = lit.value();
           excluded = ex.split(",").map(String::from).collect();
+        } else {
+          panic!("exclude argument expects a string")
+        }
+      }
+      if nv.path.is_ident("invisble") {
+        if let syn::Lit::Bool(lit) = &nv.lit {
+          let lit = lit.value();
+          visible = !lit;
         }
       }
     }
   }
 
+  
+
   let input: DeriveInput = syn::parse(item).unwrap();
   let mut output = input;
   match &mut output.data {
     syn::Data::Struct(strct) => {
-      transform_struct(strct, &excluded);
+      transform_struct(strct, visible, &excluded);
     }
     _ => panic!("use_attributes can only be used on structs"),
   }
