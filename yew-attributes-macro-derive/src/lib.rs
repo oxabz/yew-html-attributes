@@ -3,8 +3,9 @@ mod use_attributes;
 mod utils;
 
 extern crate proc_macro;
+
 use has_attributes::transform_struct;
-use quote::quote;
+use quote::{quote};
 use syn::{parse_macro_input, AttributeArgs, DeriveInput};
 use use_attributes::{generate_set_instructions, generate_unset_instructions};
 
@@ -16,18 +17,100 @@ pub fn has_attributes(
 ) -> proc_macro::TokenStream {
   // Parse the input tokens into a syntax tree
   let args = parse_macro_input!(attr as AttributeArgs);
-  if !args.is_empty() {
-    panic!("has_attributes does not take any arguments");
+
+  let mut excluded = vec![];
+  for arg in args {
+    if let syn::NestedMeta::Meta(syn::Meta::NameValue(nv)) = arg {
+      if nv.path.is_ident("exclude") {
+        if let syn::Lit::Str(lit) = nv.lit {
+          let ex = lit.value();
+          excluded = ex.split(",").map(String::from).collect();
+        }
+      }
+    }
   }
+
   let input: DeriveInput = syn::parse(item).unwrap();
   let mut output = input;
   match &mut output.data {
     syn::Data::Struct(strct) => {
-      transform_struct(strct);
+      transform_struct(strct, &excluded);
     }
     _ => panic!("use_attributes can only be used on structs"),
   }
-  quote!(#output).into()
+
+  // Check that the struct has a Properties & HasHtmlAttributes derive 
+  let mut has_properties = false;
+  let mut has_html_attributes = false;
+  for attr in &output.attrs {
+    if attr.path.is_ident("derive") {
+      if let syn::Meta::List(list) = &attr.parse_meta().unwrap() {
+        for nested in &list.nested {
+          if let syn::NestedMeta::Meta(syn::Meta::Path(path)) = nested {
+            if path.is_ident("Properties") {
+              has_properties = true;
+            }
+            if path.is_ident("HasHtmlAttributes") {
+              has_html_attributes = true;
+            }
+          }
+        }
+      }
+    }
+  }
+  if !has_properties{
+    panic!("has_attributes can only be used on structs with a Properties derive");
+  }
+  if !has_html_attributes{
+    panic!("has_attributes can only be used on structs with a HasHtmlAttributes derive");
+  }
+  quote!(
+    #output
+  ).into()
+}
+
+
+/// Implements the HasHtmlAttributes trait for the given struct
+#[proc_macro_derive(HasHtmlAttributes, attributes(attr))]
+pub fn derive_has_html_attributes(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+  let input: DeriveInput = syn::parse(item).unwrap();
+  let name = &input.ident;
+
+  let mut attr_fields = vec![];
+
+  match input.data {
+    syn::Data::Struct(data) => {
+      if let syn::Fields::Named(fields) = data.fields {
+        for field in fields.named {
+          if let Some(attr) = field.attrs.first() {
+            if attr.path.is_ident("attr") {
+              attr_fields.push(field.ident.unwrap());
+            }
+          }
+        }
+      } else {
+        panic!("HasHtmlAttributes can only be used on structs with named fields");
+      }
+    }
+    _ => panic!("HasHtmlAttributes can only be used on structs"),
+  }
+
+
+
+  let set_instructions = generate_set_instructions(&attr_fields);
+  let unset_instructions = generate_unset_instructions(&attr_fields);
+  quote!(
+    impl yew_attributes_macro::HasHtmlAttributes for #name {
+      fn set_attributes(&self, node: &web_sys::HtmlElement) -> Vec<wasm_bindgen::closure::Closure<dyn Fn(Event)>> {
+        let mut listeners: Vec<wasm_bindgen::closure::Closure<dyn Fn(Event)>> = Vec::new();
+        #(#set_instructions)*
+        listeners
+      }
+      fn unset_attributes(&self, node: &web_sys::HtmlElement) {
+        #(#unset_instructions)*
+      }
+    }
+  ).into()
 }
 
 /// Create a hook that use the html attributes created by has_attributes to pass them to a given html element
@@ -47,15 +130,14 @@ pub fn use_attributes(item: proc_macro::TokenStream) -> proc_macro::TokenStream 
     _ => panic!("use_attributes second argument must be a path"),
   };
 
-  let instructions = generate_set_instructions().into_iter();
-  let unset_instructions = generate_unset_instructions().into_iter();
   quote!(
     use_effect_with_deps(|(node_ref, props)|{
       let node = node_ref.cast::<web_sys::HtmlElement>().unwrap();
-      let mut listeners: Vec<wasm_bindgen::closure::Closure::<dyn Fn(Event)>> = vec![];
-      #(#instructions)*
+      let props = props.clone();
+      let mut listeners: Vec<wasm_bindgen::closure::Closure::<dyn Fn(Event)>> = props.set_attributes(&node);
       move || {
-        #(#unset_instructions)*
+        let node = node;
+        props.unset_attributes(&node);
         drop(listeners);
       }
     }
