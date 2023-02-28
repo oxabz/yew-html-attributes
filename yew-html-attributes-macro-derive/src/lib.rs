@@ -1,13 +1,14 @@
+mod consts;
 mod has_attributes;
 mod use_attributes;
 mod utils;
 
 extern crate proc_macro;
 
+use consts::{ATTRIBUTE_TAG, ELEMENT_ARG, EXCLUDE_ARG, INVISIBLE_ARG};
 use has_attributes::transform_struct;
-use proc_macro2::Span;
-use quote::{quote, ToTokens};
-use syn::{parse_macro_input, token::Pound, Attribute, AttributeArgs, DeriveInput, NestedMeta};
+use quote::{quote};
+use syn::{parse_macro_input, AttributeArgs, DeriveInput, NestedMeta};
 use use_attributes::{generate_set_instructions, generate_unset_instructions};
 
 /// Parse the has_attributes macro arguments
@@ -17,7 +18,7 @@ fn parse_has_attributes_args(args: Vec<NestedMeta>) -> (bool, Option<String>, Ve
   let mut element = None;
   for arg in args {
     if let syn::NestedMeta::Meta(syn::Meta::NameValue(nv)) = arg {
-      if nv.path.is_ident("exclude") {
+      if nv.path.is_ident(EXCLUDE_ARG) {
         if let syn::Lit::Str(lit) = &nv.lit {
           let ex = lit.value();
           excluded = ex.split(",").map(String::from).collect();
@@ -25,7 +26,7 @@ fn parse_has_attributes_args(args: Vec<NestedMeta>) -> (bool, Option<String>, Ve
           panic!("exclude argument expects a string")
         }
       }
-      if nv.path.is_ident("invisble") {
+      if nv.path.is_ident(INVISIBLE_ARG) {
         if let syn::Lit::Bool(lit) = &nv.lit {
           let lit = lit.value();
           visible = !lit;
@@ -33,7 +34,7 @@ fn parse_has_attributes_args(args: Vec<NestedMeta>) -> (bool, Option<String>, Ve
           panic!("invisble argument expects a boolean")
         }
       }
-      if nv.path.is_ident("element") {
+      if nv.path.is_ident(ELEMENT_ARG) {
         if let syn::Lit::Str(lit) = &nv.lit {
           let lit = lit.value();
           element = Some(lit);
@@ -91,28 +92,6 @@ pub fn has_html_attributes(
     }
   }
 
-  if let Some(elem) = &element {
-    let meta: syn::Meta = syn::parse_str(&format!("htmlelem = \"{elem}\"")).unwrap();
-    if let syn::Meta::NameValue(syn::MetaNameValue {
-      path,
-      eq_token,
-      lit,
-    }) = meta
-    {
-      let mut tokens = eq_token.to_token_stream();
-      tokens.extend(lit.to_token_stream());
-      output.attrs.push(Attribute {
-        pound_token: Pound(Span::call_site()),
-        style: syn::AttrStyle::Outer,
-        bracket_token: syn::token::Bracket {
-          span: Span::call_site(),
-        },
-        path,
-        tokens,
-      });
-    }
-  }
-
   if !has_properties {
     panic!("has_attributes can only be used on structs with a Properties derive");
   }
@@ -138,7 +117,7 @@ pub fn derive_has_html_attributes(item: proc_macro::TokenStream) -> proc_macro::
       if let syn::Fields::Named(fields) = data.fields {
         for field in fields.named {
           if let Some(attr) = field.attrs.first() {
-            if attr.path.is_ident("attr") {
+            if attr.path.is_ident(ATTRIBUTE_TAG) {
               attr_fields.push(field.ident.unwrap());
             }
           }

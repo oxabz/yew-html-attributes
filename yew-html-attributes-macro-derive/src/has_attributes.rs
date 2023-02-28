@@ -1,6 +1,6 @@
 use syn::DataStruct;
 
-use crate::utils::get_attributes;
+use crate::{utils::get_attributes, consts::ATTRIBUTE_TAG};
 
 pub(crate) fn transform_struct(input: &mut DataStruct, visible:bool, element:Option<&str>, exclude: &[String]) {
   match &mut input.fields {
@@ -23,7 +23,7 @@ fn generate_fields(visible:bool, element:Option<&str>, exclude:&[String]) -> Vec
     } else {
       name
     };
-    let field: syn::FieldsNamed = syn::parse_str(&format!("{{#[htmlattr]pub {}: Option<{}>}}", name, typ))
+    let field: syn::FieldsNamed = syn::parse_str(&format!("{{#[{}]pub {}: Option<{}>}}", ATTRIBUTE_TAG, name, typ))
       .expect("yew-attributes panicked [ code : vxmnq ]");
     let field: syn::Field = field
       .named

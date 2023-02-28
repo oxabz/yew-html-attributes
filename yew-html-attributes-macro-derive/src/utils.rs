@@ -29,6 +29,9 @@ lazy_static! {
   };
 }
 
+ 
+
+
 pub(crate) fn get_attributes(visible: bool, element:Option<&str>, excluded:&[String]) -> HashMap<String, String> {
   let mut attributes = HTML_ATTRIBUTES["*"].clone();
   
@@ -63,3 +66,4 @@ pub(crate) fn get_all_attributes() -> HashMap<String, String> {
     acc
   })
 }
+

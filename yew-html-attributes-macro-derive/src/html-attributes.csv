@@ -95,7 +95,6 @@ onmousemove,"visible",yew::callback::Callback<web_sys::Event>
 onmouseout,"visible",yew::callback::Callback<web_sys::Event>
 onmouseover,"visible",yew::callback::Callback<web_sys::Event>
 onmouseup,"visible",yew::callback::Callback<web_sys::Event>
-onmousewheel,"visible",yew::callback::Callback<web_sys::Event>
 onoffline,body,yew::callback::Callback<web_sys::Event>
 ononline,body,yew::callback::Callback<web_sys::Event>
 onpagehide,body,yew::callback::Callback<web_sys::Event>
@@ -110,7 +109,6 @@ onratechange,"audio,video",yew::callback::Callback<web_sys::Event>
 onreset,form,yew::callback::Callback<web_sys::Event>
 onresize,body,yew::callback::Callback<web_sys::Event>
 onscroll,"visible",yew::callback::Callback<web_sys::Event>
-onsearch,input,yew::callback::Callback<web_sys::Event>
 onseeked,"audio,video",yew::callback::Callback<web_sys::Event>
 onseeking,"audio,video",yew::callback::Callback<web_sys::Event>
 onselect,"visible",yew::callback::Callback<web_sys::Event>

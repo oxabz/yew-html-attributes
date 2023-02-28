@@ -1,7 +1,8 @@
 use proc_macro2::{TokenStream, Ident};
 use quote::quote;
 
-use crate::utils::{get_all_attributes};
+use crate::{utils::{get_all_attributes}, consts::{STRING_ATTR_TYPE, CALLBACK_ATTR_TYPE}};
+
 
 pub(crate) fn generate_set_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
   // Create a vector of fields
@@ -16,7 +17,7 @@ pub(crate) fn generate_set_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
     };
     let typ = attr_dict.get(name).expect(&format!("attribute {name} is not a known html attribute"));
 
-    if typ == "String" {
+    if typ == STRING_ATTR_TYPE {
       let instruction = quote!(
         if let Some(value) = &self.#attr {
           node.set_attribute(#name,value).expect("yew-attributes panicked [ code : 00A0A ]");
@@ -25,7 +26,7 @@ pub(crate) fn generate_set_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
         }
       );
       instructions.push(instruction);
-    } else if typ == "Callback<Event>" {
+    } else if typ == CALLBACK_ATTR_TYPE {
       let fnid = syn::Ident::new(&format!("set_{}", name), proc_macro2::Span::call_site());
       let instruction = quote!(
         if let Some(callback) = &self.#attr {
@@ -54,7 +55,7 @@ pub(crate) fn generate_unset_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
   for attr in attrs{
     let name = attr.to_string();
     let typ = attr_dict.get(&name).expect(&format!("attribute {name} is not a known html attribute"));
-    if typ == "Callback<Event>" {
+    if typ == CALLBACK_ATTR_TYPE {
       let fnid = syn::Ident::new(&format!("set_{}", name), proc_macro2::Span::call_site());
       let instruction = quote!(
         node.#fnid(None);
