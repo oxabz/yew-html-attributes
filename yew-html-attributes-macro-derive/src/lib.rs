@@ -5,7 +5,7 @@ mod utils;
 
 extern crate proc_macro;
 
-use consts::{ATTRIBUTE_TAG, ELEMENT_ARG, EXCLUDE_ARG, INVISIBLE_ARG};
+use consts::{ATTRIBUTE_TAG, ELEMENT_ARG, EXCLUDE_ARG, INVISIBLE_ARG, EXCLUDE_ARG_REGEX};
 use has_attributes::transform_struct;
 use quote::{quote};
 use syn::{parse_macro_input, AttributeArgs, DeriveInput, NestedMeta};
@@ -21,7 +21,9 @@ fn parse_has_attributes_args(args: Vec<NestedMeta>) -> (bool, Option<String>, Ve
       if nv.path.is_ident(EXCLUDE_ARG) {
         if let syn::Lit::Str(lit) = &nv.lit {
           let ex = lit.value();
-          excluded = ex.split(",").map(String::from).collect();
+          let re = regex::Regex::new(EXCLUDE_ARG_REGEX).unwrap();
+          excluded = re.find_iter(&ex).map(|m|m.as_str().to_string()).collect();
+
         } else {
           panic!("exclude argument expects a string")
         }

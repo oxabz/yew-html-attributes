@@ -4,3 +4,4 @@ pub(crate) const ATTRIBUTE_TAG: &str = "htmlattr";
 pub(crate) const EXCLUDE_ARG: &str = "exclude";
 pub(crate) const INVISIBLE_ARG: &str = "invisible";
 pub(crate) const ELEMENT_ARG: &str = "element";
+pub(crate) const EXCLUDE_ARG_REGEX: &str = r"([a-z0-9\-]+)";
