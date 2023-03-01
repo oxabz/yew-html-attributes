@@ -49,7 +49,21 @@ fn parse_has_attributes_args(args: Vec<NestedMeta>) -> (bool, Option<String>, Ve
   (visible, element, excluded)
 }
 
-/// Adds the standard html attributes to the Properties struct
+
+/** 
+ * The attribute macro that add the fields to your props struct. It expect to be used on a struct that derive the `yew::Properties` trait and the `yew_html_attribute::HasHtmlAttributes` trait.
+ * # Arguments
+ * - exclude: A list of attributes to exclude from the struct in a string. [Default: ""]
+ * - invisible: A boolean that mark the target element as not part of the visble html element (Ex : `<script/>`) [Default: false]
+ * - element: A string that specify the html element to use. [Default: "div"]
+ * 
+ * # Example
+ * ```rust
+ * #[has_html_attributes]
+ * #[derive(Debug, Clone, PartialEq, Default, yew::Properties, yew_html_attribute::HasHtmlAttributes)]
+ * pub struct InputProps{}
+ * ```
+ */ 
 #[proc_macro_attribute]
 pub fn has_html_attributes(
   attr: proc_macro::TokenStream,
@@ -147,7 +161,25 @@ pub fn derive_has_html_attributes(item: proc_macro::TokenStream) -> proc_macro::
   ).into()
 }
 
-/// Create a hook that use the html attributes created by has_attributes to pass them to a given html element
+
+
+/**
+ * The proc macro that use the `yew_html_attribute::HasHtmlAttributes` trait to set and unset the attributes on the html element. It expect to be used on a struct that derive the `yew::Properties` trait and the `yew_html_attribute::HasHtmlAttributes` trait.
+ * # Arguments
+ * - 1 : The name of the struct that implement the `yew_html_attribute::HasHtmlAttributes` trait
+ * - 2 : The reference to the html element
+ * 
+ * # Example
+ * ```rust
+ * let node_ref = use_node_ref();
+ * use_attributes!(node_ref, props);
+ * html! {
+ *   <>
+ *     <input ref={node_ref} type="text" />
+ *   </>
+ * }
+ * ```
+*/
 #[proc_macro]
 pub fn use_attributes(item: proc_macro::TokenStream) -> proc_macro::TokenStream {
   // Parse the input tokens
