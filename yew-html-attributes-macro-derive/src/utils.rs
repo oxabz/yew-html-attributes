@@ -17,7 +17,7 @@ lazy_static! {
       let usages = line.get(1).expect("yew-attributes panicked : Internal error. Please raise an issue on the Github [code : kcwld]");
       let typ = line.get(2).expect("yew-attributes panicked : Internal error. Please raise an issue on the Github [code : yynya]");
 
-      let usages = usages.split(","); 
+      let usages = usages.split(','); 
 
       for usage in usages {
         let usage = usage.to_string();

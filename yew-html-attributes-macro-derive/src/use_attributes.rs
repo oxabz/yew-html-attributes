@@ -15,7 +15,7 @@ pub(crate) fn generate_set_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
     } else {
       &name
     };
-    let typ = attr_dict.get(name).expect(&format!("attribute {name} is not a known html attribute"));
+    let typ = attr_dict.get(name).unwrap_or_else(|| panic!("attribute {name} is not a known html attribute"));
 
     if typ == STRING_ATTR_TYPE {
       let instruction = quote!(
@@ -54,7 +54,7 @@ pub(crate) fn generate_unset_instructions(attrs: &[Ident]) -> Vec<TokenStream> {
   let attr_dict = get_all_attributes();
   for attr in attrs{
     let name = attr.to_string();
-    let typ = attr_dict.get(&name).expect(&format!("attribute {name} is not a known html attribute"));
+    let typ = attr_dict.get(&name).unwrap_or_else(|| panic!("attribute {name} is not a known html attribute"));
     if typ == CALLBACK_ATTR_TYPE {
       let fnid = syn::Ident::new(&format!("set_{}", name), proc_macro2::Span::call_site());
       let instruction = quote!(

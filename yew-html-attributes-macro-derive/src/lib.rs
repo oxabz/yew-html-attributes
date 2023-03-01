@@ -67,7 +67,7 @@ pub fn has_html_attributes(
       transform_struct(
         strct,
         visible,
-        element.as_ref().map(String::as_str),
+        element.as_deref(),
         &excluded,
       );
     }
