@@ -1,8 +1,12 @@
 [package]
 name = "yew-html-attributes"
+description = "Easily forwarding standard HTML attributes to a html element"
 version = "0.1.0"
 edition = "2021"
-
+license = "Apache-2.0"
+readme = "../README.md"
+repository = "https://github.com/oxabz/yew-html-attributes"
+keywords = ["yew", "html", "attributes", "macro"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

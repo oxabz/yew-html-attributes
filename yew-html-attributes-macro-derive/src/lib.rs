@@ -1,3 +1,5 @@
+//! This crate contains the macros for the [yew-html-attributes](https://crates.io/crates/yew-html-attributes) crate.
+
 mod consts;
 mod has_attributes;
 mod use_attributes;
@@ -170,7 +172,7 @@ pub fn derive_has_html_attributes(item: proc_macro::TokenStream) -> proc_macro::
  * - 2 : The reference to the html element
  * 
  * # Example
- * ```rust
+ * ```rust, no_run
  * let node_ref = use_node_ref();
  * use_attributes!(node_ref, props);
  * html! {

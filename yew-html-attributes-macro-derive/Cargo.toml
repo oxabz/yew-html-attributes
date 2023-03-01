@@ -1,7 +1,11 @@
 [package]
 name = "yew-html-attributes-macro-derive"
+description = "A crate containing the proc-macro for the yew-html-attributes crate"
 version = "0.1.0"
 edition = "2021"
+license = "Apache-2.0"
+readme = "../README.md"
+repository = "https://github.com/oxabz/yew-html-attributes"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
