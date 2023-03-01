@@ -2,8 +2,6 @@
 
 Yew html attributes is a macro crate that allow you to easily add standard html attributes to your component and to then pass them to a child.
 
-> Note the API is not yet stabilized so use this crate at your own risk
-
 ## Usage : 
 
 To add the html attributes to your props just add the `#[has_html_attributes]` before your props and derive `HasHtmlAttributes`.
