@@ -900,6 +900,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "yew-html-attributes"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "197d693fb8fd7142ff4148dca95c99f6c827ad4953176462060df8fa8eaf969f"
+dependencies = [
+ "wasm-bindgen",
+ "web-sys",
+ "yew",
+ "yew-html-attributes-macro-derive 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "yew-html-attributes-demo"
 version = "0.1.0"
 dependencies = [
@@ -916,7 +928,7 @@ dependencies = [
  "wasm-bindgen",
  "web-sys",
  "yew",
- "yew-html-attributes",
+ "yew-html-attributes 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
