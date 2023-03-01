@@ -1,4 +1,4 @@
-#![doc = include_str!("../../readme.md")]
+#![doc = include_str!("../readme.md")]
 use wasm_bindgen::prelude::Closure;
 use web_sys::Event;
 pub use yew_html_attributes_macro_derive::HasHtmlAttributes;
