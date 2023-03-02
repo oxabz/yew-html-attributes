@@ -8,7 +8,7 @@ To add the html attributes to your props just add the `#[has_html_attributes]` b
 
 To then pass them along use the `use_attributes!` macro with a reference to the child html element and the props refererence.
 
-```rs
+```rust
 use yew::prelude::*;
 use yew_attributes_macro::prelude::*;
 
@@ -36,7 +36,7 @@ pub fn input(props:&InputProps) -> Html {
 By default the macro only adds the attributes common to all html element. 
 If you want element to recieve all it's associated attributes provide the `element` parameter in `has_html_attributes`
 
-```rs
+```rust, no_run
 use yew::prelude::*;
 use yew_attributes_macro::prelude::*;
 
@@ -64,12 +64,12 @@ pub fn input(props:&InputProps) -> Html {
 You might want some to remove some attributes to avoid overwritting some of your component internal logic.
 To do so you have to add the `exclude` parameter to the `has_html_attributes` with a list of all the attributes you want to exclude
 
-```rs
+```rust
 use yew::prelude::*;
 use yew_attributes_macro::prelude::*;
 
 #[has_html_attributes(exclude="oninput,onclick")]
-#[derive(Debug, Clone, PartialEq, Default, Properties, HasHtmlAttributes)]
+#[derive(Debug, Clone, PartialEq, Default, Properties, HasHtmlAt    Finished dev [unoptimized + debuginfo] target(s) in 1.76stributes)]
 pub struct InputProps{}
 
 #[function_component(Input)]
@@ -91,7 +91,7 @@ pub fn input(props:&InputProps) -> Html {
 
 By default the macro add the attributes common to visible html elements. If you want to only have the attributes common to all html element use the invisible parameter
 
-```rs
+```rust
 use yew::prelude::*;
 use yew_attributes_macro::prelude::*;
 
