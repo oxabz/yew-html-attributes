@@ -896,7 +896,7 @@ dependencies = [
  "wasm-bindgen",
  "web-sys",
  "yew",
- "yew-html-attributes-macro-derive",
+ "yew-html-attributes-macro-derive 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -922,6 +922,20 @@ dependencies = [
 [[package]]
 name = "yew-html-attributes-macro-derive"
 version = "0.1.1"
+dependencies = [
+ "csv",
+ "lazy_static",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "syn",
+]
+
+[[package]]
+name = "yew-html-attributes-macro-derive"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "17817c115a4375bb028aa4284f7ca8c8267cc8648348648f85e3ccec40dea3d7"
 dependencies = [
  "csv",
  "lazy_static",
